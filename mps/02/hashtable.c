@@ -26,7 +26,7 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
   unsigned int idx = hash(key) % ht->size;
   bucket_t *b = malloc(sizeof(bucket_t));
   b->key = key;
-  b->val = val;
+  b->val = vals;
   b->next = ht->buckets[idx];
   ht->buckets[idx] = b;
 }
