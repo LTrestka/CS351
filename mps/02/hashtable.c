@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "hashtable.h"
 
@@ -25,6 +26,13 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
   /* FIXME: the current implementation doesn't update existing entries */
   unsigned int idx = hash(key) % ht->size;
   bucket_t *b = malloc(sizeof(bucket_t));
+  if (ht->buckets[idx]){
+    if(ht->buckets[idx]->key == key){
+    free(ht->buckets[idx]->val);
+    free(ht->buckets[idx]->key);
+    free(ht->buckets[idx]->next);
+    }
+  }
   b->key = key;
   b->val = val;
   b->next = ht->buckets[idx];
