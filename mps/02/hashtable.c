@@ -25,20 +25,30 @@ hashtable_t *make_hashtable(unsigned long size) {
 void ht_put(hashtable_t *ht, char *key, void *val) {
   /* FIXME: the current implementation doesn't update existing entries */
   unsigned int idx = hash(key) % ht->size;
-  bucket_t *b = malloc(sizeof(bucket_t));
   if (ht->buckets[idx]){
-    if(ht->buckets[idx]->key == key){
+    if(strcmp(ht->buckets[idx]->key, key)==0){
     free(ht->buckets[idx]->val);
+    printf("\n\nKurwa\n\n");
     free(ht->buckets[idx]->key);
-    free(ht->buckets[idx]->next);
+    ht->buckets[idx]->key = key;
+    ht->buckets[idx]->val = val;
     }
     else{
+      printf("\n\nDumb\n\n");
+      bucket_t *b = malloc(sizeof(bucket_t));
+      b->key = key;
+      b->val = val;
+      b->next = ht->buckets[idx];
+      ht->buckets[idx] = b;
     }
   }
-  b->key = key;
-  b->val = val;
-  b->next = ht->buckets[idx];
-  ht->buckets[idx] = b;
+  else{
+    bucket_t *b = malloc(sizeof(bucket_t));
+    b->key = key;
+    b->val = val;
+    b->next = ht->buckets[idx];
+    ht->buckets[idx] = b;
+  }
 }
 
 void *ht_get(hashtable_t *ht, char *key) {
