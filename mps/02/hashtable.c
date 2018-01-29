@@ -25,7 +25,6 @@ hashtable_t *make_hashtable(unsigned long size) {
 void ht_put(hashtable_t *ht, char *key, void *val) {
   /* FIXME: the current implementation doesn't update existing entries */
   unsigned int idx = hash(key) % ht->size;
-  int x = 0;
   bucket_t *last = NULL;
   bucket_t *Next = ht->buckets[idx];
   bucket_t *current = NULL;
@@ -85,7 +84,40 @@ void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
 }
 
 void free_hashtable(hashtable_t *ht) {
-  free(ht); // FIXME: must free all substructures!
+  bucket_t *b[ht->size];
+  bucket_t *p;
+  unsigned long i, k=0;
+  int bucks = 0;
+
+  // makes an array of bucket heads
+  for (i = 0; i < ht->size; i++){
+    p = ht->buckets[i];
+    if(p){
+      b[k] = p;
+      k++;
+    }
+  }
+  
+  // makes an array of total buckets, starting from tail to the head
+  // followed by the next tail.
+  bucket_t *buck_array[1000];
+  for (i = 0; i < k; i++){
+    while(b[i]){
+      buck_array[bucks] = b[i];
+      bucks++;
+      b[i]= b[i]->next;
+    }
+  }
+  
+  // free's all the bucket keys, then vals, then the bucket itself
+  for(i = bucks; i > 0; i--){
+    free(buck_array[i-1]->key);
+    free(buck_array[i-1]->val);
+    free(buck_array[i-1]);
+  }
+  // free's what remains of the hashtable
+  free(p);
+  free(ht);
 }
 
 /* TODO */
