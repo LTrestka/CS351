@@ -26,32 +26,34 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
   /* FIXME: the current implementation doesn't update existing entries */
   unsigned int idx = hash(key) % ht->size;
   int x = 0;
-  while(ht->buckets[idx]){
-    if(strcmp(ht->buckets[idx]->key,key)==-0){
-      free(ht->buckets[idx]->key);
-      free(ht->buckets[idx]->val);
-      ht->buckets[idx]->key = key;
-      ht->buckets[idx]->val = val;
-      x = 1;
-      printf("Kurwa\n");
-      break;
+  bucket_t *last = NULL;
+  bucket_t *Next = ht->buckets[idx];
+  bucket_t *current = NULL;
+  while(Next && Next->key &&(strcmp(key, Next->key)!= 0)){
+      last = Next;
+      Next = Next->next;
     }
-    else if (ht->buckets[idx]->key){
-      printf("%s%s\n", key,val);
-      //ht->buckets[idx] = ht->buckets[idx]->next;
-      printf("%s%s", key, val);
+  if(Next && Next->key && strcmp(key, Next->key)==0){
+    free(Next->key);
+    free(Next->val);
+    Next->key = key;
+    Next->val = val;
+  }
+  else{
+    current = malloc(sizeof(bucket_t));
+    current->key = key;
+    current->val = val;
+    if(Next == ht->buckets[idx]){
+      current->next = Next;
+      ht->buckets[idx]=current;
+    }
+    else if(!Next){
+      last->next = current;
     }
     else{
-      printf("Nope");
+      current->next = Next;
+      last->next = current;
     }
-  }
-  
-  if(x==0){
-  bucket_t *b = malloc(sizeof(bucket_t));
-  b->key = key;
-  b->val = val;
-  b->next = ht->buckets[idx];
-  ht->buckets[idx] = b;
   }
 }
 
