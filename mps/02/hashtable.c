@@ -116,12 +116,29 @@ void free_hashtable(hashtable_t *ht) {
     free(buck_array[i-1]);
   }
   // free's what remains of the hashtable
+  
   free(p);
   free(ht);
 }
 
 /* TODO */
 void  ht_del(hashtable_t *ht, char *key) {
+  unsigned long i;
+  i = hash(key)%ht->size; 
+  bucket_t before_head = { .next = ht->buckets[i]};
+  bucket_t *previous = &before_head;
+  while(previous->next && strcmp(previous->next->key,key)!=0) {
+    previous = previous->next;
+  }
+  if(previous->next ) {
+    bucket_t *next = previous->next->next;
+    bucket_t *b = previous->next;
+    free(previous->next->key);
+    free(previous->next->val);
+    previous->next = next;
+    free(b);
+    ht->buckets[i] = previous->next;
+  }
 }
 
 void  ht_rehash(hashtable_t *ht, unsigned long newsize) {
