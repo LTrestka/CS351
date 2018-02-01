@@ -28,15 +28,18 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
   bucket_t *last = NULL;
   bucket_t *Next = ht->buckets[idx];
   bucket_t *current = NULL;
+  printf("%u\n", idx);
   while(Next && Next->key &&(strcmp(key, Next->key)!= 0)){
       last = Next;
       Next = Next->next;
+      printf("1\n");
     }
   if(Next && Next->key && strcmp(key, Next->key)==0){
     free(Next->key);
     free(Next->val);
     Next->key = key;
     Next->val = val;
+    printf("2\n");
   }
   else{
     current = malloc(sizeof(bucket_t));
@@ -154,15 +157,21 @@ void  ht_rehash(hashtable_t *ht, unsigned long newsize) {
     bucket_t before_head = {.next = ht->buckets[i]};
     bucket_t *previous = &before_head;
     while(previous->next){
-      char key;
-      void *val;
+      char *key;
+      char *val;
+      char k;
+      //Next = &previous->next->next;
       key = previous->next->key;
       val = previous->next->val;
-      printf("key = %s", previous->next->key);
-       ht_put(new, key, "sex");
-       printf("%s, ", ht_get(new, key));
-      //ht_del(ht, key);
-      printf("ok");
+      k = *key;
+      ht_put(new, &k, val);
+      printf(" %s\n ", ht_get(new, &k));
+      previous->next = previous->next->next;
     }
   }
+  //free(ht->size);
+  ht=new;
+  i = 83;
+  printf("%u, %s", ht->size, ht->buckets[i]->val);
 }
+
