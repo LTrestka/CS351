@@ -137,9 +137,32 @@ void  ht_del(hashtable_t *ht, char *key) {
     free(previous->next->val);
     previous->next = next;
     free(b);
+    if(previous->next){
     ht->buckets[i] = previous->next;
+    }
+    else{
+      ht->buckets[i]=NULL;;
+    }
   }
 }
 
 void  ht_rehash(hashtable_t *ht, unsigned long newsize) {
+  unsigned long i;
+  hashtable_t *new;
+  new = make_hashtable(newsize);
+  for(i = 0; i < ht->size; i++){
+    bucket_t before_head = {.next = ht->buckets[i]};
+    bucket_t *previous = &before_head;
+    while(previous->next){
+      char key;
+      void *val;
+      key = previous->next->key;
+      val = previous->next->val;
+      printf("key = %s", previous->next->key);
+       ht_put(new, key, "sex");
+       printf("%s, ", ht_get(new, key));
+      //ht_del(ht, key);
+      printf("ok");
+    }
+  }
 }
