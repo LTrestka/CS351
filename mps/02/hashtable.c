@@ -96,12 +96,15 @@ void free_hashtable(hashtable_t *ht) {
       free(current);
       ht->buckets[i]=next;
       current=next;
+      printf("1");
     }
-    if (current && !current->next){
+    
+    if(current && !(current->next)){
       free(current->key);
       free(current->val);
       free(current);
-    }
+      printf("2");
+    }  
   }
   free(ht->buckets);
   free(ht);
@@ -140,14 +143,19 @@ void  ht_rehash(hashtable_t *ht, unsigned long newsize) {
   while(i<ht->size){
     for (b = ht->buckets[i]; b !=NULL; b=b->next){
       ht_put(new,b->key, b->val);
+      ht_del(ht, b);
     }
+    free(ht->buckets[i]);
     i++;
   }
+   free(ht->buckets);
+   free(ht);
   oldT = *ht;
   newT = *new;
+  //printf("\n%p, %p, %p",ht, temp, &oldT);
   temp = &oldT;
-  //free_hashtable(&oldT);
   *ht = newT;
+  //printf("\n%p, %p, %p\n\n", ht, temp,&newT);
 }
 
 
