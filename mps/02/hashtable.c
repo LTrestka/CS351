@@ -85,42 +85,62 @@ void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
 }
 
 void free_hashtable(hashtable_t *ht) {
-  bucket_t *b[ht->size];
-  bucket_t *p;
-  unsigned long i, k=0;
-  int bucks = 0;
+  bucket_t *current;
+  bucket_t *next;
+  unsigned long i;// k=0;
+  //int bucks = 0;
 
   // makes an array of bucket heads
   for (i = 0; i < ht->size; i++){
-    p = ht->buckets[i];
-    if(p){
-      b[k] = p;
-      k++;
+    current = ht->buckets[i];
+    printf("%u", i);
+    while(current && current->next){
+      next = current->next;
+      free(current->key);
+      free(current->val);
+      free(current);
+      ht->buckets[i]=next;
+      current=next;
+      printf("%s\n", ht->buckets[i]->val);
+    }
+    if (current && !current->next){
+      printf("%s \n", ht->buckets[i]->val);
+    free(current->key);
+    free(current->val);
+    free(current);
     }
   }
+  free(ht->buckets);
+  free(ht);
+}
+    //if(p){
+      //b[k] = p;
+      //k++;
+      //}
+    //}
   
   // makes an array of total buckets, starting from tail to the head
   // followed by the next tail.
-  bucket_t *buck_array[1000];
-  for (i = 0; i < k; i++){
-    while(b[i]){
-      buck_array[bucks] = b[i];
-      bucks++;
-      b[i]= b[i]->next;
-    }
-  }
+  //bucket_t *buck_array[1000];
+  //for (i = 0; i < k; i++){
+    ///while(b[i]){
+      //buck_array[bucks] = b[i];
+      // bucks++;
+      // b[i]= b[i]->next;
+      //}
+    //}
   
   // free's all the bucket keys, then vals, then the bucket itself
-  for(i = bucks; i > 0; i--){
-    free(buck_array[i-1]->key);
-    free(buck_array[i-1]->val);
-    free(buck_array[i-1]);
-  }
+  //for(i = bucks; i > 0; i--){
+    //free(buck_array[i-1]->key);
+    //free(buck_array[i-1]->val);
+    //free(buck_array[i-1]);
+    //}
   // free's what remains of the hashtable
   
-  free(p);
-  free(ht);
-}
+  //free(p);
+  //free(ht);
+  //}
 
 /* TODO */
 void  ht_del(hashtable_t *ht, char *key) {
@@ -182,8 +202,11 @@ void  ht_rehash(hashtable_t *ht, unsigned long newsize) {
     }
   }
   if(i<100){
+    printf("Kurwa");
   free_hashtable(ht);
+  printf("Kurwa");
   ht = new;
+  printf("Kurwa");
   }
 //ht_put(new, &k, val);
       //printf(" %s\n ", ht_get(new, &k));
