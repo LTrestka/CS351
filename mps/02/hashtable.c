@@ -28,7 +28,6 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
   bucket_t *last = NULL;
   bucket_t *Next = ht->buckets[idx];
   bucket_t *current = NULL;
-  printf("%u\n", idx);
   while(Next && Next->key &&(strcmp(key, Next->key)!= 0)){
       last = Next;
       Next = Next->next;
@@ -87,13 +86,9 @@ void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
 void free_hashtable(hashtable_t *ht) {
   bucket_t *current;
   bucket_t *next;
-  unsigned long i;// k=0;
-  //int bucks = 0;
-
-  // makes an array of bucket heads
+  unsigned long i;
   for (i = 0; i < ht->size; i++){
     current = ht->buckets[i];
-    printf("%u", i);
     while(current && current->next){
       next = current->next;
       free(current->key);
@@ -101,48 +96,16 @@ void free_hashtable(hashtable_t *ht) {
       free(current);
       ht->buckets[i]=next;
       current=next;
-      printf("%s\n", ht->buckets[i]->val);
     }
     if (current && !current->next){
-      printf("%s \n", ht->buckets[i]->val);
-    free(current->key);
-    free(current->val);
-    free(current);
+      free(current->key);
+      free(current->val);
+      free(current);
     }
   }
   free(ht->buckets);
   free(ht);
 }
-    //if(p){
-      //b[k] = p;
-      //k++;
-      //}
-    //}
-  
-  // makes an array of total buckets, starting from tail to the head
-  // followed by the next tail.
-  //bucket_t *buck_array[1000];
-  //for (i = 0; i < k; i++){
-    ///while(b[i]){
-      //buck_array[bucks] = b[i];
-      // bucks++;
-      // b[i]= b[i]->next;
-      //}
-    //}
-  
-  // free's all the bucket keys, then vals, then the bucket itself
-  //for(i = bucks; i > 0; i--){
-    //free(buck_array[i-1]->key);
-    //free(buck_array[i-1]->val);
-    //free(buck_array[i-1]);
-    //}
-  // free's what remains of the hashtable
-  
-  //free(p);
-  //free(ht);
-  //}
-
-/* TODO */
 void  ht_del(hashtable_t *ht, char *key) {
   unsigned long i;
   i = hash(key)%ht->size; 
@@ -168,49 +131,23 @@ void  ht_del(hashtable_t *ht, char *key) {
 }
 
 void  ht_rehash(hashtable_t *ht, unsigned long newsize) {
-  unsigned long i;
+  unsigned long i=0;
   hashtable_t *new;
   new = make_hashtable(newsize);
-  //for(i = 0; i < ht->size; i++){
-  bucket_t before_head = {.next = ht->buckets[i]};
-  bucket_t *previous = &before_head;
-  bucket_t *head = previous->next;
-  // while(previous->next){
-  //  unsigned long j = hash(previous->next->key)%newsize;
-  //  bucket_t bef_new_head = {.next = new->buckets[j]};
-  //  bucket_t *new_prev = &bef_new_head;
-  //  bucket_t head = {new->buckets[j]};
-  //  if(!new_prev->next){
-  //	new_prev->next = previous->next;
-  //  }
-  //  printf("%s\n", new_prev->next->key);
-  //  new->buckets[j] = previous->next;
-  //  ht->buckets[i] = previous->next->next;
-      
-      //char *key;
-      //char *val;
-      //char k;
-      //key = previous->next->key;
-      //val = previous->next->val;
-      //k = *key;
   bucket_t *b;
-  for (b = ht->buckets[i]; b !=NULL; b=b->next){
-    ht_put(new,b->key, b->val);
-    i++;
-    if (i>ht->size){
-      break;
+  hashtable_t oldT, newT;
+  hashtable_t *temp;
+  while(i<ht->size){
+    for (b = ht->buckets[i]; b !=NULL; b=b->next){
+      ht_put(new,b->key, b->val);
     }
+    i++;
   }
-  if(i<100){
-    printf("Kurwa");
-  free_hashtable(ht);
-  printf("Kurwa");
-  ht = new;
-  printf("Kurwa");
-  }
-//ht_put(new, &k, val);
-      //printf(" %s\n ", ht_get(new, &k));
-      //previous->next = previous->next->next;
-  }
+  oldT = *ht;
+  newT = *new;
+  temp = &oldT;
+  //free_hashtable(&oldT);
+  *ht = newT;
+}
 
 
