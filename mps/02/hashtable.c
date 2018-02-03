@@ -43,10 +43,10 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
     current->key = key;
     current->val = val;
     if(Next == ht->buckets[idx]){
-      current->next = Next;
+      // current->next = Next;
       ht->buckets[idx]=current;
     }
-    else if(!Next){
+    else if(!Next&&last){
       last->next = current;
     }
     else{
@@ -142,19 +142,20 @@ void  ht_rehash(hashtable_t *ht, unsigned long newsize) {
   hashtable_t *temp;
   while(i<ht->size){
     for (b = ht->buckets[i]; b !=NULL; b=b->next){
-      ht_put(new,b->key, b->val);
-      ht_del(ht, b);
+      ht_put(new,b->key, b->val); 
     }
     free(ht->buckets[i]);
     i++;
   }
-   free(ht->buckets);
-   free(ht);
+  free(ht->buckets);
+  free(ht);
   oldT = *ht;
   newT = *new;
   //printf("\n%p, %p, %p",ht, temp, &oldT);
   temp = &oldT;
+  //free_hashtable(new);
   *ht = newT;
+  free(new);
   //printf("\n%p, %p, %p\n\n", ht, temp,&newT);
 }
 
