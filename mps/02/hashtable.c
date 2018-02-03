@@ -32,14 +32,12 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
   while(Next && Next->key &&(strcmp(key, Next->key)!= 0)){
       last = Next;
       Next = Next->next;
-      printf("1\n");
     }
   if(Next && Next->key && strcmp(key, Next->key)==0){
     free(Next->key);
     free(Next->val);
     Next->key = key;
     Next->val = val;
-    printf("2\n");
   }
   else{
     current = malloc(sizeof(bucket_t));
@@ -153,25 +151,43 @@ void  ht_rehash(hashtable_t *ht, unsigned long newsize) {
   unsigned long i;
   hashtable_t *new;
   new = make_hashtable(newsize);
-  for(i = 0; i < ht->size; i++){
-    bucket_t before_head = {.next = ht->buckets[i]};
-    bucket_t *previous = &before_head;
-    while(previous->next){
-      char *key;
-      char *val;
-      char k;
-      //Next = &previous->next->next;
-      key = previous->next->key;
-      val = previous->next->val;
-      k = *key;
-      ht_put(new, &k, val);
-      printf(" %s\n ", ht_get(new, &k));
-      previous->next = previous->next->next;
+  //for(i = 0; i < ht->size; i++){
+  bucket_t before_head = {.next = ht->buckets[i]};
+  bucket_t *previous = &before_head;
+  bucket_t *head = previous->next;
+  // while(previous->next){
+  //  unsigned long j = hash(previous->next->key)%newsize;
+  //  bucket_t bef_new_head = {.next = new->buckets[j]};
+  //  bucket_t *new_prev = &bef_new_head;
+  //  bucket_t head = {new->buckets[j]};
+  //  if(!new_prev->next){
+  //	new_prev->next = previous->next;
+  //  }
+  //  printf("%s\n", new_prev->next->key);
+  //  new->buckets[j] = previous->next;
+  //  ht->buckets[i] = previous->next->next;
+      
+      //char *key;
+      //char *val;
+      //char k;
+      //key = previous->next->key;
+      //val = previous->next->val;
+      //k = *key;
+  bucket_t *b;
+  for (b = ht->buckets[i]; b !=NULL; b=b->next){
+    ht_put(new,b->key, b->val);
+    i++;
+    if (i>ht->size){
+      break;
     }
   }
-  //free(ht->size);
-  ht=new;
-  i = 83;
-  printf("%u, %s", ht->size, ht->buckets[i]->val);
-}
+  if(i<100){
+  free_hashtable(ht);
+  ht = new;
+  }
+//ht_put(new, &k, val);
+      //printf(" %s\n ", ht_get(new, &k));
+      //previous->next = previous->next->next;
+  }
+
 
